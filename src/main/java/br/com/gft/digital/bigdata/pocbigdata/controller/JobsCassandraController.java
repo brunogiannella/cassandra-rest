@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.gft.digital.bigdata.pocbigdata.dao.ClienteRepository;
+import br.com.gft.digital.bigdata.pocbigdata.dao.impl.ClienteRepositoryImpl;
 import br.com.gft.digital.bigdata.pocbigdata.model.Cliente;
 import br.com.gft.digital.bigdata.pocbigdata.model.RestObject;
 
@@ -17,12 +17,12 @@ import br.com.gft.digital.bigdata.pocbigdata.model.RestObject;
 public class JobsCassandraController {
 
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteRepositoryImpl clienteRepository;
 		 
 	@RequestMapping(value="/cliente", method = RequestMethod.GET)
 	public RestObject consultarClientes() { 
 		try {
-			List<Cliente> clientes = clienteRepository.getClientes();
+			List<Cliente> clientes = clienteRepository.get();
 			return new RestObject(200, true, "Consulta realizada com sucesso", clientes);
 		} catch(Exception e) {
 			return new RestObject(500, false, "Ocorreu um erro na consulta: " + e.getMessage(), null);
@@ -32,7 +32,7 @@ public class JobsCassandraController {
 	@RequestMapping(value="/cliente/{cpfCnpj}", method = RequestMethod.GET)
 	public RestObject consultarCliente(@PathVariable Long cpfCnpj) {
 		try {
-			Cliente cliente = clienteRepository.getCliente(cpfCnpj);
+			Cliente cliente = clienteRepository.get(cpfCnpj);
 			
 			if(cliente == null) {
 				return new RestObject(200, true, "Usuário não encontrado", cliente);

@@ -11,23 +11,23 @@ import com.datastax.driver.mapping.MappingManager;
 import com.datastax.driver.mapping.Result;
 
 import br.com.gft.digital.bigdata.pocbigdata.config.CassandraCluster;
-import br.com.gft.digital.bigdata.pocbigdata.dao.ClienteRepository;
+import br.com.gft.digital.bigdata.pocbigdata.dao.CassandraDao;
 import br.com.gft.digital.bigdata.pocbigdata.model.Cliente;
 
 @Repository
-public class ClienteRepositoryImpl implements ClienteRepository {
+public class ClienteRepositoryImpl implements CassandraDao<Cliente> {
 
 	Session session =  CassandraCluster.getInstance().iniciarSessao();
 	Mapper<Cliente> mapper = new MappingManager(session).mapper(Cliente.class);
 	
-	public List<Cliente> getClientes() {		
+	public List<Cliente> get() {		
 		ResultSet results = session.execute("SELECT * FROM pocbigdata.cliente");
 		Result<Cliente> clientesResult = mapper.map(results);
 				
 		return clientesResult.all();
 	};
 	
-	public Cliente getCliente(Long cpfCnpj) {
+	public Cliente get(Long cpfCnpj) {
 		return mapper.get(cpfCnpj);
 	}
 	

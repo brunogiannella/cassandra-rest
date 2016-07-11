@@ -26,6 +26,12 @@ public class SinistroRepositoryImpl implements CassandraDao<Sinistro> {
 		return sinistrosResult.all();
 	};
 	
+	public List<Sinistro> getSinistros(Long idSinistro) {
+		ResultSet results = session.execute("SELECT * FROM pocbigdata.sinistro WHERE id_sinistro > " + idSinistro + " ORDER BY id_sinistro");
+		Result<Sinistro> sinistrosResult = mapper.map(results);
+		return sinistrosResult.all();
+	}
+	
 	public Sinistro get(Long idSinistro) {
 		return mapper.get(idSinistro);
 	}

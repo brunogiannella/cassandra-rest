@@ -4,6 +4,8 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
 
+import br.com.gft.digital.bigdata.pocbigdata.constantes.CassandraConstantes;
+
 public class CassandraCluster {
 
 	private static CassandraCluster uniqueInstance;
@@ -22,7 +24,7 @@ public class CassandraCluster {
 
 	public Session iniciarSessao() {
 		if (uniqueInstance.getSession() == null) {
-			Cluster cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
+			Cluster cluster = Cluster.builder().addContactPoint(CassandraConstantes.IP_CONEXAO).build();
 			Metadata metadata = cluster.getMetadata();
 			System.out.printf("Connected to cluster: %s\n", metadata.getClusterName());
 			uniqueInstance.setSession(cluster.connect());

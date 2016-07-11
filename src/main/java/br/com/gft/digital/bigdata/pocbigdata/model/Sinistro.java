@@ -28,6 +28,9 @@ public class Sinistro {
 
 	@Column(name = "endereco")
 	private String endereco;
+	
+	@Column(name = "bairro")
+	private String bairro;
 
 	@Column(name = "ponto_referencia")
 	private String ponto_referencia;
@@ -146,4 +149,12 @@ public class Sinistro {
 		this.flClienteCondutor = flClienteCondutor;
 	}
 
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+	
 }

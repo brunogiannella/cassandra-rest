@@ -13,4 +13,8 @@ public enum TipoIndexador {
 		this.descricao = descricao;
 	}
 
+	public String getDescricao() {
+		return descricao;
+	}
+
 }

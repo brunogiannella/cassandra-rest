@@ -36,11 +36,15 @@ public class GeradorIndicadoresService {
 	private List<Sinistro> sinistros = null;
 	
 	public void gerarIndicadores() {
-		gerarIndicadoresSinistroRegiao();
-		gerarIndicadoresFaixaEtaria();
-		gerarIndicadoresMarcas(TipoIndexador.MARCA_X_DEFEITOS, "pane");
-		gerarIndicadoresMarcas(TipoIndexador.MARCA_X_ROUBOS, "roubo");
-		System.out.println("Indicadores foram gerados");
+		try {
+			gerarIndicadoresSinistroRegiao();
+			gerarIndicadoresFaixaEtaria();
+			gerarIndicadoresMarcas(TipoIndexador.MARCA_X_DEFEITOS, "pane");
+			gerarIndicadoresMarcas(TipoIndexador.MARCA_X_ROUBOS, "roubo");
+			System.out.println("Indicadores foram gerados");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void gerarIndicadoresFaixaEtaria() {
@@ -171,10 +175,10 @@ public class GeradorIndicadoresService {
 		if(!sinistrosIndexar.isEmpty()) {
 			
 			for(Sinistro sinistro : sinistrosIndexar) {
-				if(mapeados.containsKey(sinistro.getBairro())) {
-					mapeados.put(sinistro.getBairro(), mapeados.get(sinistro.getBairro()) + 1);
+				if(mapeados.containsKey(sinistro.getEndereco())) {
+					mapeados.put(sinistro.getEndereco(), mapeados.get(sinistro.getEndereco()) + 1);
 				} else {
-					mapeados.put(sinistro.getBairro(), 1L);
+					mapeados.put(sinistro.getEndereco(), 1L);
 				}
 			}
 			

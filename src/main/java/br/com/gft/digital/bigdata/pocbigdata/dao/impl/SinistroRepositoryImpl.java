@@ -27,7 +27,7 @@ public class SinistroRepositoryImpl implements CassandraDao<Sinistro> {
 	};
 	
 	public List<Sinistro> getSinistros(Long idSinistro) {
-		ResultSet results = session.execute("SELECT * FROM pocbigdata.sinistro WHERE id_sinistro > " + idSinistro + " ORDER BY id_sinistro");
+		ResultSet results = session.execute("SELECT * FROM pocbigdata.sinistro WHERE token(id_sinistro) > token(" + idSinistro +")");
 		Result<Sinistro> sinistrosResult = mapper.map(results);
 		return sinistrosResult.all();
 	}

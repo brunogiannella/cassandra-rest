@@ -1,5 +1,6 @@
 package br.com.gft.digital.bigdata.pocbigdata.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,13 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gft.digital.bigdata.pocbigdata.constantes.TipoIndexador;
 import br.com.gft.digital.bigdata.pocbigdata.dao.impl.ApoliceRepositoryImpl;
 import br.com.gft.digital.bigdata.pocbigdata.dao.impl.ClienteRepositoryImpl;
 import br.com.gft.digital.bigdata.pocbigdata.dao.impl.IndicadorStringRepositoryImpl;
 import br.com.gft.digital.bigdata.pocbigdata.dao.impl.SinistroRepositoryImpl;
 import br.com.gft.digital.bigdata.pocbigdata.model.Apolice;
 import br.com.gft.digital.bigdata.pocbigdata.model.Cliente;
+import br.com.gft.digital.bigdata.pocbigdata.model.Grafico;
 import br.com.gft.digital.bigdata.pocbigdata.model.IndicadorString;
+import br.com.gft.digital.bigdata.pocbigdata.model.ItemGrafico;
 import br.com.gft.digital.bigdata.pocbigdata.model.RestObject;
 import br.com.gft.digital.bigdata.pocbigdata.model.Sinistro;
 
@@ -37,8 +41,43 @@ public class JobsCassandraController {
 	@RequestMapping(value="/indicador", method = RequestMethod.GET)
 	public RestObject consultaIndicadores() { 
 		try {
+			List<Grafico> graficos = new ArrayList<Grafico>();
+			
 			List<IndicadorString> indicadores = indicadoresRepository.get();
-			return new RestObject(200, true, "Consulta realizada com sucesso", indicadores);
+			
+			for(IndicadorString indicador : indicadores) {
+				
+				Grafico grafico = new Grafico();
+				grafico.setTipoGrafico(indicador.getTipoIndicador());
+				
+				if(TipoIndexador.MARCA_X_ROUBOS.getDescricao().equals(indicador.getTipoIndicador())) {
+					grafico.setTituloGrafico("Roubos por marca");
+				} else if(TipoIndexador.FAIXAETATICA_X_SINISTROS.getDescricao().equals(indicador.getTipoIndicador())) {
+					grafico.setTituloGrafico("Utilização do seguro por faixa etaria");
+				} else if(TipoIndexador.MARCA_X_DEFEITOS.getDescricao().equals(indicador.getTipoIndicador())) {
+					grafico.setTituloGrafico("Defeitos por marca");
+				} else if(TipoIndexador.REGIAO_X_SINISTROS.getDescricao().equals(indicador.getTipoIndicador())) {
+					grafico.setTituloGrafico("Quantidade de sinistros por região");
+				}
+				
+				if(indicador.getDados() != null) {
+					List<ItemGrafico> itensGrafico = new ArrayList<ItemGrafico>();
+					
+					for (String key : indicador.getDados().keySet()) {
+						ItemGrafico item = new ItemGrafico();
+						item.setItem(key);
+						item.setValor(indicador.getDados().get(key));
+						
+						itensGrafico.add(item);
+					}
+					
+					grafico.setItens(itensGrafico);
+				}
+				
+				graficos.add(grafico);
+			}
+			
+			return new RestObject(200, true, "Consulta realizada com sucesso", graficos);
 		} catch(Exception e) {
 			return new RestObject(500, false, "Ocorreu um erro na consulta: " + e.getMessage(), null);
 		}
@@ -118,9 +157,9 @@ public class JobsCassandraController {
 			sinistro.setDescricao("Sinistro " + i);
 			
 			if(i % 2 == 1) {
-				sinistro.setEndereco("Jardins");
+				sinistro.setEndereco("SP");
 			} else {
-				sinistro.setEndereco("Interlagos");
+				sinistro.setEndereco("RJ");
 			}
 			
 			if(i % 2 == 1) {

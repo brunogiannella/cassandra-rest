@@ -5,6 +5,7 @@ public enum TipoIndexador {
 	MARCA_X_ROUBOS("marca_roubos"),
 	MARCA_X_DEFEITOS("marca_defeitos"),
 	FAIXAETATICA_X_SINISTROS("faixaetaria_sinistros"),
+	ACIDENTES_X_ROUBOS("acidentes_roubos"),
 	REGIAO_X_SINISTROS("regiao_sinistros");
 
 	public String descricao;
@@ -16,5 +17,5 @@ public enum TipoIndexador {
 	public String getDescricao() {
 		return descricao;
 	}
-
+	
 }

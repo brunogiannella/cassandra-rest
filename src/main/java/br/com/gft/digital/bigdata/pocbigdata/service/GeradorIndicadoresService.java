@@ -41,12 +41,55 @@ public class GeradorIndicadoresService {
 			gerarIndicadoresFaixaEtaria();
 			gerarIndicadoresMarcas(TipoIndexador.MARCA_X_DEFEITOS, "pane");
 			gerarIndicadoresMarcas(TipoIndexador.MARCA_X_ROUBOS, "roubo");
+			gerarIndicadoresAcidentesRoubos();
 			System.out.println("Indicadores foram gerados");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void gerarIndicadoresAcidentesRoubos() {
+		IndicadorString indicadorString = indicadoresStringRepository.get(TipoIndexador.ACIDENTES_X_ROUBOS.getDescricao());
+		List<Sinistro> sinistrosIndexar = null;
+		Map<String, Long> mapeados = new HashMap<String, Long>();
+		
+		if(indicadorString == null) {
+			if(sinistros == null) {
+				sinistros = sinistroRepository.get();
+			}
+			sinistrosIndexar = sinistros;
+		} else {
+			sinistrosIndexar = sinistroRepository.getSinistros(indicadorString.getUltimoIndexado());
+		}
+		
+		if(!sinistrosIndexar.isEmpty()) {
+			for(Sinistro sinistro : sinistrosIndexar) {
+				if(mapeados.containsKey(sinistro.getTipoSinistro())) {
+					mapeados.put(sinistro.getTipoSinistro(), mapeados.get(sinistro.getTipoSinistro()) + 1);
+				} else {
+					mapeados.put(sinistro.getTipoSinistro(), 1L);
+				}
+			}
+			
+			if(indicadorString == null) {
+				IndicadorString indicadorGerado = new IndicadorString();
+				indicadorGerado.setTipoIndicador(TipoIndexador.ACIDENTES_X_ROUBOS.getDescricao());
+				indicadorGerado.setDados(mapeados);
+				indicadorGerado.setUltimoIndexado(sinistrosIndexar.get(sinistrosIndexar.size()-1).getIdSinistro());
+				indicadoresStringRepository.save(indicadorGerado);
+			} else {
+				for (String key : indicadorString.getDados().keySet()) {
+                    if(mapeados.containsKey(key)) {
+                    	indicadorString.getDados().put(key, (indicadorString.getDados().get(key) + mapeados.get(key)));
+                    }
+				}
+				
+				indicadorString.setUltimoIndexado(sinistrosIndexar.get(sinistrosIndexar.size()-1).getIdSinistro());
+				indicadoresStringRepository.save(indicadorString);
+			}
+		}
+	}
+
 	private void gerarIndicadoresFaixaEtaria() {
 		IndicadorString indicadorString = indicadoresStringRepository.get(TipoIndexador.FAIXAETATICA_X_SINISTROS.getDescricao());
 		List<Sinistro> sinistrosIndexar = null;
